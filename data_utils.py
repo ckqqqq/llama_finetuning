@@ -25,7 +25,7 @@ train_info_args = {
     'data_backend': 'record',
     'model_type': 'LLaMA',
     # 预训练模型路径 , 从0训练，则置空
-    'model_name_or_path': '/data/nlp/pre_models/torch/llama/ckpt_new/llama-7b-4bit.pth',
+    'model_name_or_path': '/data/nlp/pre_models/torch/llama/ckpt/llama-7b-4bit.pth',
     'tokenizer_name': './LLaMA_7b_config/tokenizer.model',
     'config_name': './LLaMA_7b_config/config_small.json',
     'convert_onnx': False, # 转换onnx模型
@@ -53,16 +53,17 @@ train_info_args = {
 
 data_conf = {
     'stride': 50,
-
+    'count_per_group': 1, # 数据较多可以增大
 }
 
 
 def preprocess(text):
-  text = text.replace("\n", "\\n").replace("\t", "\\t")
+  # text = text.replace("\n", "\\n").replace("\t", "\\t")
   return text
 
 def postprocess(text):
-  return text.replace("\\n", "\n").replace("\\t", "\t")
+  # return text.replace("\\n", "\n").replace("\\t", "\t")
+  return text
 
 
 class NN_DataHelper(DataHelper):
@@ -80,17 +81,21 @@ class NN_DataHelper(DataHelper):
         tokenizer = self.tokenizer
 
         stride = data_conf['stride']
-
-        examples = data
+        COUNT_PER_GROUP = data_conf['count_per_group']
+        examples_batch = data
 
         input_ids_all = []
-        for idx, (question, answer) in enumerate(examples):
-            text = question + answer
-            input_ids = tokenizer.encode(text=text)
-            if len(input_ids) <= 3:
-                continue
-            input_ids_all += input_ids[:-1]
-            if idx != len(examples) - 1:
+        for examples in examples_batch:
+            for idx, (question, answer) in enumerate(examples):
+                text = question + answer
+                input_ids = tokenizer.encode(text=text)
+                if len(input_ids) <= 3:
+                    continue
+                input_ids_all += input_ids[:-1]
+                if idx != len(examples) - 1:
+                    input_ids_all += [tokenizer.eos_token_id]
+
+            if COUNT_PER_GROUP > 0:
                 input_ids_all += [tokenizer.eos_token_id]
 
         pos = 0
@@ -139,7 +144,10 @@ class NN_DataHelper(DataHelper):
     # 读取文件
 
     def on_get_corpus(self, files: typing.List, mode: str):
+
+        COUNT_PER_GROUP = data_conf['count_per_group']
         D = []
+        qa_batch = []
         for file in files:
             with open(file, mode='r', encoding='utf-8', newline='\n') as f:
                 lines = f.readlines()
@@ -151,7 +159,7 @@ class NN_DataHelper(DataHelper):
                 paragraph = jd['paragraph']
                 if i < 10:
                     print(paragraph)
-                sub = []
+                qa = []
                 for session in paragraph:
                     q = session['q']
                     answers_list = session['a']
@@ -159,10 +167,15 @@ class NN_DataHelper(DataHelper):
                     answers = ''
                     for a in answers_list:
                         answers += preprocess(a + '\n')
-                    sub.append((q, answers))
-                D.append(copy.deepcopy(sub))
-                sub.clear()
+                    qa.append((q, answers))
 
+                qa_batch.append(qa)
+                if len(qa_batch) >= COUNT_PER_GROUP:
+                    D.append(copy.deepcopy(qa_batch))
+                    qa_batch.clear()
+        if len(qa_batch):
+            D.append(copy.deepcopy(qa_batch))
+            qa_batch.clear()
         return D
 
     def collate_fn(self,batch):

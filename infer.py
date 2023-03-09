@@ -4,7 +4,7 @@ import os
 
 import torch
 from deep_training.data_helper import ModelArguments, TrainingArguments, DataArguments
-from deep_training.nlp.models.LLaMA_parallel import TransformerLLaMAModel, setup_model_parallel, LLaMAConfig
+from deep_training.nlp.models.LLaMA_parallel import TransformerLLaMALMHeadModel, setup_model_parallel, LLaMAConfig
 from transformers import HfArgumentParser
 
 import generator
@@ -12,7 +12,7 @@ from data_utils import train_info_args, NN_DataHelper
 from sentencepiece_tokenizer import SentencePieceTokenizer
 
 
-class MyTransformer(TransformerLLaMAModel, with_pl=True):
+class MyTransformer(TransformerLLaMALMHeadModel, with_pl=True):
     def __init__(self, *args, **kwargs):
         super(MyTransformer, self).__init__(*args, **kwargs)
 
@@ -64,7 +64,6 @@ cheese =>""",
 
     # 并行
     setup_model_parallel()
-    torch.cuda.set_device(torch.device('cuda:0'))
     torch.manual_seed(1)
 
 
@@ -73,26 +72,33 @@ cheese =>""",
     tokenizer, config, label2id, id2label = dataHelper.load_tokenizer_and_config(
         tokenizer_class_name=SentencePieceTokenizer, config_class_name=LLaMAConfig)
 
-    #小参数
-    config.inference = True
-    config.max_seq_len = 512
-    config.n_layer = 6
+
+    #修改配置
+    def modify_config(config):
+        # 小参数
+        config.inference = True
+        config.max_seq_len = 512
 
 
-    # 加载新训练权重
-    # if os.path.exists('./best_ckpt'):
-    #     model = MyTransformer.load_from_checkpoint('./best.pt', config=config,
-    #                                                model_args=model_args,
-    #                                                training_args=training_args)
-
-    torch.set_default_tensor_type(torch.cuda.HalfTensor)
-    model = MyTransformer(config=config, model_args=model_args, training_args=training_args)
-    torch.set_default_tensor_type(torch.FloatTensor)
-
-
+    #加载新训练权重
+    train_weight = './best_ckpt/best.pt'
+    if os.path.exists(train_weight):
+        config = LLaMAConfig.from_pretrained('./best_ckpt')
+        modify_config(config)
+        model = MyTransformer.load_from_checkpoint(train_weight, config=config,
+                                                   model_args=model_args,
+                                                   training_args=training_args)
+    else:
+        modify_config(config)
+        config.n_layer = 16 # 官方默认32层 ， 使用小层推理
+        model = MyTransformer(config=config, model_args=model_args, training_args=training_args)
 
     model.eval()
+    model.half()
     model.to(torch.device('cuda:0'))
 
-    #预测
-    generate_text(model,prompts,tokenizer=tokenizer)
+
+
+    # 预测
+    with torch.inference_mode():
+        generate_text(model,prompts,tokenizer=tokenizer)

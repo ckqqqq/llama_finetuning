@@ -41,7 +41,6 @@ class Generate:
         prev_pos = 0
         for cur_pos in range(start_pos, total_len):
             logits = self.model.forward(tokens[:, prev_pos:cur_pos], start_pos=prev_pos)[0]
-            # logits = logits[:,-1]
             if temperature > 0:
                 probs = torch.softmax(logits / temperature, dim=-1)
                 next_token = sample_top_p(probs, top_p)

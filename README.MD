@@ -15,11 +15,14 @@
 
 
 
-## LLaMA finetuning 权重下载  
-
+## LLaMA finetuning 权重下载
     预训练模型下载 https://huggingface.co/decapoda-research
 
+    https://huggingface.co/decapoda-research/llama-smallint-pt 体积小
+    https://huggingface.co/decapoda-research/llama-7b-hf  精度高
+
 ## 数据示例
+    给出一种qa 数据示例 , 如果想跟母模型保持一致，可以参考LLaMA官网数据组织结构.
     单条数据示例1
     {
         "id": 0, "paragraph": [
@@ -68,6 +71,24 @@
     num_process_worker 为多进程制作数据 ， 如果数据量较大 ， 适当调大至cpu数量
     dataHelper.make_dataset_with_args(data_args.train_file,mixed_data=False, shuffle=True,mode='train',num_process_worker=0)
 
+
+## 推理
+    12g 显卡即可测试
+    torchrun --nproc_per_node 1 infer.py
+
+![inference](1.png)
+
 ## 训练
 
     torchrun --nproc_per_node 1 train.py
+
+
+
+##  注: Different models require different MP values:
+
+|  Model | MP |
+|--------|----|
+| 7B     | 1  |
+| 13B    | 2  |
+| 33B    | 4  |
+| 65B    | 8  |
