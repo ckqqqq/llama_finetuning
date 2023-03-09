@@ -95,7 +95,7 @@ class NN_DataHelper(DataHelper):
                 if idx != len(examples) - 1:
                     input_ids_all += [tokenizer.eos_token_id]
 
-            if COUNT_PER_GROUP > 0:
+            if COUNT_PER_GROUP > 1:
                 input_ids_all += [tokenizer.eos_token_id]
 
         pos = 0
