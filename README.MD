@@ -79,6 +79,8 @@
 ![inference](1.png)
 
 ## 训练
+    完整参数为 config.json
+    若显卡容留不足 ， 可以修改 config_small.json n_layer 层数
 
     torchrun --nproc_per_node 1 train.py
 
