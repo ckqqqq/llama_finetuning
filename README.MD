@@ -19,10 +19,10 @@
     预训练模型下载 https://huggingface.co/decapoda-research
 
     https://huggingface.co/decapoda-research/llama-smallint-pt 体积小
-    https://huggingface.co/decapoda-research/llama-7b-hf  精度高
+    https://huggingface.co/decapoda-research/llama-7b-hf  半精度,精度相对高
 
 ## 数据示例
-    给出一种qa 数据示例 , 如果想跟母模型保持一致，可以参考LLaMA官网数据组织结构.
+    给出一种qa 数据示例 , 如果想跟母模型保持一致，可以参考LLaMA https://arxiv.org/abs/2302.13971v1 数据组织结构.
     单条数据示例1
     {
         "id": 0, "paragraph": [
@@ -94,3 +94,7 @@
 | 13B    | 2  |
 | 33B    | 4  |
 | 65B    | 8  |
+
+
+## reference
+    https://arxiv.org/abs/2302.13971v1
