@@ -91,9 +91,7 @@ class NN_DataHelper(DataHelper):
                 input_ids = tokenizer.encode(text=text)
                 if len(input_ids) <= 3:
                     continue
-                input_ids_all += input_ids[:-1]
-                if idx != len(examples) - 1:
-                    input_ids_all += [tokenizer.eos_token_id]
+                input_ids_all += input_ids
 
             if COUNT_PER_GROUP > 1:
                 input_ids_all += [tokenizer.eos_token_id]
