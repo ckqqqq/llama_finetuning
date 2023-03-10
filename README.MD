@@ -16,10 +16,9 @@
 
 
 ## LLaMA finetuning 权重下载
-    预训练模型下载 https://huggingface.co/decapoda-research
+    预训练模型下载 https://huggingface.co/nyanko7/LLaMA-7B
 
-    https://huggingface.co/decapoda-research/llama-smallint-pt 体积小
-    https://huggingface.co/decapoda-research/llama-7b-hf  半精度,精度相对高
+
 
 ## 数据示例
     给出一种qa 数据示例 , 如果想跟母模型保持一致，可以参考LLaMA https://arxiv.org/abs/2302.13971v1 数据组织结构.

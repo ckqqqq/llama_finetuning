@@ -25,9 +25,8 @@ train_info_args = {
     'data_backend': 'record',
     'model_type': 'LLaMA',
     # 预训练模型路径 , 从0训练，则置空
-    # 'model_name_or_path': '/data/nlp/pre_models/torch/llama/ckpt/llama-7b-4bit.pth',
     # 'tokenizer_name': './LLaMA_7b_config/tokenizer.model',
-    'model_name_or_path': '/data/nlp/pre_models/torch/llama/ckpt_gf/consolidated.00.pth',
+    'model_name_or_path': '/data/nlp/pre_models/torch/llama/ckpt_gf_new/consolidated.00.pth',
     'tokenizer_name': '/data/nlp/pre_models/torch/llama/ckpt_gf/tokenizer.model',
     'config_name': './LLaMA_7b_config/config_small.json',
     'convert_onnx': False, # 转换onnx模型

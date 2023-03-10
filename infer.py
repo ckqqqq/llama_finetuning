@@ -86,7 +86,7 @@ cheese =>""",
         model = MyTransformer(config=config, model_args=model_args, training_args=training_args)
 
     model.eval()
-    # model.half()
+    model.half()
     model.to(torch.device('cuda:0'))
 
 
@@ -95,7 +95,9 @@ cheese =>""",
     with torch.inference_mode():
         results = generator.Generate(model=model.backbone, tokenizer=tokenizer,
                                      device=torch.device('cuda:0')).generate(
-            prompts, max_gen_len=256, temperature=0.8, top_p=0.95,
+            prompts, max_gen_len=256,
+            temperature=0.8, top_p=0.95,
+            # temperature=0, top_p=1,
         )
 
         for result in results:
