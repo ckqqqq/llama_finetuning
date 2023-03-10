@@ -18,15 +18,6 @@ class MyTransformer(TransformerLLaMALMHeadModel, with_pl=True):
 
 
 
-def generate_text(pl_module: MyTransformer, prompts, tokenizer: SentencePieceTokenizer):
-    results = generator.Generate(model=pl_module.backbone, tokenizer=tokenizer,device=torch.device('cuda:0')).generate(
-        prompts, max_gen_len=256, temperature=0.8, top_p=0.95,
-    )
-
-    for result in results:
-        print(result)
-        print("\n==================================\n")
-
 
 if __name__ == '__main__':
     prompts = [
@@ -101,4 +92,12 @@ cheese =>""",
 
     # 预测
     with torch.inference_mode():
-        generate_text(model,prompts,tokenizer=tokenizer)
+        results = generator.Generate(model=model.backbone, tokenizer=tokenizer,
+                                     device=torch.device('cuda:0')).generate(
+            prompts, max_gen_len=256, temperature=0.8, top_p=0.95,
+        )
+
+        for result in results:
+            print(result)
+            print("\n==================================\n")
+

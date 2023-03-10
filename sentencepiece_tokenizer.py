@@ -44,13 +44,25 @@ class SentencePieceTokenizer:
     def from_pretrained(cls,tokenizer_name,**kwargs):
         return cls(tokenizer_name,**kwargs)
 
-    def encode(self, text: str, bos: bool=True, eos: bool=True) -> List[int]:
+    def encode(self, text: str, bos: bool=True, eos: bool=True,max_length=None,truncation=False) -> List[int]:
         assert type(text) is str
         t = self.sp_model.encode(text)
+
+        if truncation:
+            if len(t) > max_length:
+                if bos and eos:
+                    t = t[:max_length - 2]
+                elif bos or eos:
+                    t = t[:max_length - 1]
+                else:
+                    t = t[:max_length]
+
         if bos:
             t = [self.bos_token_id] + t
         if eos:
             t = t + [self.eos_token_id]
+
+
         return t
 
     def decode(self, t: List[int]) -> str:
