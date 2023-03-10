@@ -114,6 +114,9 @@ class NN_DataHelper(DataHelper):
             labels = np.asarray(labels, dtype=np.int32)
             if pad_len:
                 pad_val = tokenizer.pad_token_id
+                #TOO 填充id -1 ?
+                if pad_val < 0:
+                    pad_val = 0
                 input_ids_ = np.pad(input_ids_, (0, pad_len), 'constant', constant_values=(pad_val, pad_val))
                 labels = np.pad(labels, (0, pad_len), 'constant', constant_values=(-100, -100))
             d = {
