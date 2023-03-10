@@ -100,9 +100,11 @@ class NN_DataHelper(DataHelper):
         ds = []
         while pos < len(input_ids_all):
             if input_ids_all[pos] == tokenizer.bos_token_id:
-                input_ids_ = input_ids_all[pos: pos + max_seq_length]
+                input_ids_ = input_ids_all[pos: pos + max_seq_length-1] + [tokenizer.eos_token_id]
             else:
-                input_ids_ = [tokenizer.bos_token_id] + input_ids_all[pos: pos + max_seq_length -1]
+                input_ids_ = [tokenizer.bos_token_id] + input_ids_all[pos: pos + max_seq_length -2] + [tokenizer.eos_token_id]
+            if input_ids_[-2] == tokenizer.eos_token_id:
+                input_ids_ = input_ids_[:-1]
 
             pos += stride
 
