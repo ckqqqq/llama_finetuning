@@ -106,6 +106,7 @@ if __name__ == '__main__':
     # 保存最小loss模型
     checkpoint_callback = MySimpleModelCheckpoint(
         # monitor="loss",
+        every_n_epochs=1,
                                                   every_n_train_steps=2000 // training_args.gradient_accumulation_steps)
     trainer = Trainer(
         callbacks=[checkpoint_callback],

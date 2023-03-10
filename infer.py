@@ -46,6 +46,7 @@ peppermint => menthe poivrée
 plush girafe => girafe peluche
 
 cheese =>""",
+        "怎么提高英语成绩",
     ]
 
     parser = HfArgumentParser((ModelArguments, TrainingArguments, DataArguments))
@@ -85,7 +86,7 @@ cheese =>""",
         model = MyTransformer(config=config, model_args=model_args, training_args=training_args)
 
     model.eval()
-    model.half()
+    # model.half()
     model.to(torch.device('cuda:0'))
 
 
