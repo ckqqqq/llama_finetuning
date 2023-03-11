@@ -17,6 +17,7 @@
 
 ## LLaMA finetuning 权重下载
     预训练模型下载 https://huggingface.co/nyanko7/LLaMA-7B
+    迅雷地址 [magnet:?xt=urn:btih:ZXXDAUWYLRUXXBHUYEMS6Q5CE5WA3LVA&dn=LLaMA]
 
 
 
